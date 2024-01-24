@@ -52,7 +52,7 @@ jobs:
     - name: Show Target Folder
       if: always()
       run: |
-        cd target/reports
+        cd target/karate-reports
         ls -a
 
         
@@ -62,5 +62,5 @@ jobs:
         curl --location 'https://api.zephyrscale.smartbear.com/v2/automations/executions/cucumber?projectKey=KAN&autoCreateTestCases=true' \
         --header 'content-type: multipart/form-data' \
         --header 'Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb250ZXh0Ijp7ImJhc2VVcmwiOiJodHRwczovL2N1Y3VtYmVyY2xvdWQuYXRsYXNzaWFuLm5ldCIsInVzZXIiOnsiYWNjb3VudElkIjoiNWUzOTllYmU0YzMzOTUwY2E1ODBkNDU5In19LCJpc3MiOiJjb20ua2Fub2FoLnRlc3QtbWFuYWdlciIsInN1YiI6IjM1ZGQzZjRlLWU5NDAtM2Q3Zi04N2Y1LTMxOWQyNmVkNzk0OCIsImV4cCI6MTczNDE3MzkyNSwiaWF0IjoxNzAyNjM3OTI1fQ.QVktmbybVfxtKKSJ8jaTV2RIar6RBHBxDPU3cReaN9w' \
-        --form 'file=@"target/reports/report.json.zip"'
+        --form 'file=@"target/karate-reports/report.json.zip"'
       
