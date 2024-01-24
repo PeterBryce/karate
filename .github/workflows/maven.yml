@@ -1,0 +1,66 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Java CI with Maven
+
+on:
+  schedule:
+    - cron: '0 */8 * * *'
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    - name: Test with Maven
+      run: mvn test
+
+    - name: Send results to Cucumber for Jira
+      if: always()
+      run: |
+        curl -X POST https://c4j.cucumber.io/ci/rest/api/results \
+        -H 'authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb20uc21hcnRiZWFyLmN1Y3VtYmVyIiwiYXVkIjoiY2kiLCJjb250ZXh0Ijp7ImxpdmluZ19kb2NfaWQiOjQ0OTJ9LCJpYXQiOjE3MDI2Mjg2MTB9.XaDqxehwtBbmUhMO6mdBpdT3977lqYc-nH1QI7YO06Q' \
+        -H 'content-type: multipart/form-data' \
+        -F 'results_files[]'=@target/reports/report.json \
+        -F language=jvm
+
+    - name: Zip report file
+      if: always()
+      uses: vimtor/action-zip@v1.1
+      with:
+        files: target/reports/report.json
+        recursive: false
+        dest: target/reports/report.json.zip
+
+    - name: Show Target Folder
+      if: always()
+      run: |
+        cd target/reports
+        ls -a
+
+        
+    - name: Send result to Jira Zyphyr
+      if: always()
+      run: |
+        curl --location 'https://api.zephyrscale.smartbear.com/v2/automations/executions/cucumber?projectKey=KAN&autoCreateTestCases=true' \
+        --header 'content-type: multipart/form-data' \
+        --header 'Authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjb250ZXh0Ijp7ImJhc2VVcmwiOiJodHRwczovL2N1Y3VtYmVyY2xvdWQuYXRsYXNzaWFuLm5ldCIsInVzZXIiOnsiYWNjb3VudElkIjoiNWUzOTllYmU0YzMzOTUwY2E1ODBkNDU5In19LCJpc3MiOiJjb20ua2Fub2FoLnRlc3QtbWFuYWdlciIsInN1YiI6IjM1ZGQzZjRlLWU5NDAtM2Q3Zi04N2Y1LTMxOWQyNmVkNzk0OCIsImV4cCI6MTczNDE3MzkyNSwiaWF0IjoxNzAyNjM3OTI1fQ.QVktmbybVfxtKKSJ8jaTV2RIar6RBHBxDPU3cReaN9w' \
+        --form 'file=@"target/reports/report.json.zip"'
+      
