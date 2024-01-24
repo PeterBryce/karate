@@ -38,16 +38,16 @@ jobs:
         curl -X POST https://c4j.cucumber.io/ci/rest/api/results \
         -H 'authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb20uc21hcnRiZWFyLmN1Y3VtYmVyIiwiYXVkIjoiY2kiLCJjb250ZXh0Ijp7ImxpdmluZ19kb2NfaWQiOjQ0OTJ9LCJpYXQiOjE3MDI2Mjg2MTB9.XaDqxehwtBbmUhMO6mdBpdT3977lqYc-nH1QI7YO06Q' \
         -H 'content-type: multipart/form-data' \
-        -F 'results_files[]'=@target/reports/report.json \
+        -F 'results_files[]'=@target/karate-reports/examples.users.users.json \
         -F language=jvm
 
     - name: Zip report file
       if: always()
       uses: vimtor/action-zip@v1.1
       with:
-        files: target/reports/report.json
+        files: target/karate-reports/examples.users.users.json
         recursive: false
-        dest: target/reports/report.json.zip
+        dest: target/karate-reports/report.json.zip
 
     - name: Show Target Folder
       if: always()
