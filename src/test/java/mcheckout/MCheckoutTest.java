@@ -1,18 +1,17 @@
-package examples;
+package mcheckout;
 
 import com.intuit.karate.Results;
 import com.intuit.karate.Runner;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-class ExamplesTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+public class MCheckoutTest {
     @Test
     void testParallel() {
-        Results results = Runner.path("classpath:examples")
+        Results results = Runner.path("classpath:mcheckout")
                 .outputCucumberJson(true)
                 .parallel(5);
         assertEquals(0, results.getFailCount(), results.getErrorMessages());
     }
-
 }
